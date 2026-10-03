@@ -28,17 +28,11 @@ public class EmailService {
     @Value("${resend.api.key}")
     private String resendApiKey;
 
-    @Value("${email.from:onboarding@resend.dev}")
+    @Value("${email.from:noreply@campaignpro-backend-3dsw.onrender.com}")
     private String fromEmail;
 
     @Value("${app.url:http://localhost:8080}")
     private String appUrl;
-
-    @Value("${email.test.recipient:delivered@resend.dev}")
-    private String testRecipient;
-
-    @Value("${email.test.useReal:false}")
-    private boolean useRealRecipients;
 
     @Autowired
     private EmailDeliveryRepository emailDeliveryRepository;
@@ -184,12 +178,9 @@ public class EmailService {
 
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
         try {
-            // Use test recipient for development, real recipient for production
-            String recipientTo = useRealRecipients ? to : testRecipient;
-
             CreateEmailOptions params = CreateEmailOptions.builder()
                     .from(fromEmail)
-                    .to(recipientTo)
+                    .to(to)
                     .subject(subject)
                     .html(htmlContent)
                     .build();
