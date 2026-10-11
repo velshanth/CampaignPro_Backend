@@ -7,13 +7,12 @@ import com.campaignpro.model.EmailDelivery;
 import com.campaignpro.repository.ContactRepository;
 import com.campaignpro.repository.EmailDeliveryRepository;
 import com.campaignpro.repository.EmailTemplateRepository;
-import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
-import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,14 +24,14 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
-
-    @Value("${email.from:noreply@campaignpro-backend-3dsw.onrender.com}")
+    @Value("${email.from:your-email@gmail.com}")
     private String fromEmail;
 
     @Value("${app.url:http://localhost:8080}")
     private String appUrl;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     private EmailDeliveryRepository emailDeliveryRepository;
@@ -45,13 +44,6 @@ public class EmailService {
 
     @Autowired
     private TemplateService templateService;
-
-    private Resend resend;
-
-    @PostConstruct
-    public void init() {
-        this.resend = new Resend(resendApiKey);
-    }
 
     public void sendCampaignEmails(Campaign campaign) {
         java.util.Set<String> processedEmails = new java.util.HashSet<>();
@@ -149,50 +141,34 @@ public class EmailService {
     }
 
     private String extractErrorMessage(Throwable e) {
-        ResendException resendException = findResendException(e);
-        if (resendException != null && resendException.getMessage() != null) {
-            return resendException.getMessage();
-        }
         return e.getMessage() != null ? e.getMessage() : "Failed to send email";
     }
 
     private boolean isFatalProviderError(Throwable e) {
-        ResendException resendException = findResendException(e);
-        if (resendException == null) {
-            return false;
+        if (e instanceof MessagingException) {
+            MessagingException me = (MessagingException) e;
+            return me.getMessage() != null && 
+                   (me.getMessage().contains("Authentication failed") ||
+                    me.getMessage().contains("Invalid credentials") ||
+                    me.getMessage().contains("Access denied"));
         }
-        int statusCode = resendException.getStatusCode();
-        return statusCode == 401 || statusCode == 403 || statusCode == 422;
-    }
-
-    private ResendException findResendException(Throwable e) {
-        Throwable current = e;
-        while (current != null) {
-            if (current instanceof ResendException resendException) {
-                return resendException;
-            }
-            current = current.getCause();
-        }
-        return null;
+        return false;
     }
 
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
         try {
-            CreateEmailOptions params = CreateEmailOptions.builder()
-                    .from(fromEmail)
-                    .to(to)
-                    .subject(subject)
-                    .html(htmlContent)
-                    .build();
-
-            CreateEmailResponse response = resend.emails().send(params);
-
-            if (response.getId() == null) {
-                throw new RuntimeException("Resend API error: Email not sent");
-            }
-
-        } catch (ResendException e) {
-            throw new RuntimeException("Failed to send email via Resend", e);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email via Java Mail API", e);
         }
     }
 
