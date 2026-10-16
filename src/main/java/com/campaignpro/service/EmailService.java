@@ -173,7 +173,6 @@ public class EmailService {
     }
 
     private String addClickTracking(String htmlContent, String campaignId, String deliveryId) {
-        // Simple implementation - wrap href attributes with tracking URL
         String trackingUrl = appUrl + "/api/activities/track?campaignId=" + campaignId +
                 "&deliveryId=" + deliveryId + "&type=click&url=";
 
@@ -185,13 +184,12 @@ public class EmailService {
                 campaignId, EmailDelivery.DeliveryStatus.FAILED);
 
         for (EmailDelivery delivery : failedDeliveries) {
-            if (delivery.getRetryCount() < 3) { // Max 3 retries
+            if (delivery.getRetryCount() < 3) {
                 Contact contact = contactRepository.findById(delivery.getContactId()).orElse(null);
                 if (contact != null) {
                     try {
                         Campaign campaign = new Campaign();
                         campaign.setId(campaignId);
-                        // Reload campaign data if needed
                         sendEmailToContact(campaign, contact);
                     } catch (Exception e) {
                         delivery.setRetryCount(delivery.getRetryCount() + 1);

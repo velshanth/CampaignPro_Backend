@@ -100,7 +100,6 @@ public class ContactService {
                 .collect(Collectors.toList());
     }
 
-    // Contact Group Methods
     public List<ContactGroupDTO> getAllGroups(String userId) {
         return contactGroupRepository.findByUserId(userId).stream()
                 .map(this::convertToContactGroupDTO)

@@ -27,9 +27,9 @@ public class EmailTemplate {
 
     private String subject;
 
-    private String body; // HTML content with placeholders
+    private String body;
 
-    private List<String> placeholders = new ArrayList<>(); // e.g., ["{{firstName}}", "{{lastName}}"]
+    private List<String> placeholders = new ArrayList<>();
 
     private boolean isDefault = false;
 

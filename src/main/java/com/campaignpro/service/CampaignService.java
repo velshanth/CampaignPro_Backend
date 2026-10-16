@@ -51,7 +51,6 @@ public class CampaignService {
     }
 
     public CampaignDTO createCampaign(String userId, CampaignDTO campaignDTO) {
-        // Validate template exists and belongs to user
         EmailTemplate template = templateRepository.findById(campaignDTO.getTemplateId())
                 .orElseThrow(() -> new ResourceNotFoundException("Template", "id", campaignDTO.getTemplateId()));
 
@@ -65,11 +64,9 @@ public class CampaignService {
         campaign.setSubject(template.getSubject());
         campaign.setBody(template.getBody());
 
-        // Calculate total recipients
         int totalRecipients = calculateTotalRecipients(userId, campaignDTO.getContactIds(), campaignDTO.getGroupIds());
         campaign.setTotalRecipients(totalRecipients);
 
-        // Handle scheduling at creation time
         if (campaignDTO.getScheduledTime() != null) {
             if (campaignDTO.getScheduledTime().isBefore(LocalDateTime.now())) {
                 throw new BadRequestException("Scheduled time must be in the future");
@@ -118,7 +115,6 @@ public class CampaignService {
             campaign.setGroupIds(campaignDTO.getGroupIds());
         }
 
-        // Recalculate total recipients
         int totalRecipients = calculateTotalRecipients(userId, campaign.getContactIds(), campaign.getGroupIds());
         campaign.setTotalRecipients(totalRecipients);
 
@@ -213,7 +209,6 @@ public class CampaignService {
     private int calculateTotalRecipients(String userId, List<String> contactIds, List<String> groupIds) {
         java.util.Set<String> uniqueRecipients = new java.util.HashSet<>();
 
-        // Add individual contacts
         if (contactIds != null) {
             for (String contactId : contactIds) {
                 Contact contact = contactRepository.findById(contactId).orElse(null);
@@ -223,7 +218,6 @@ public class CampaignService {
             }
         }
 
-        // Add contacts from groups
         if (groupIds != null) {
             for (String groupName : groupIds) {
                 List<Contact> groupContacts = contactRepository.findByUserIdAndGroupsContaining(userId, groupName);

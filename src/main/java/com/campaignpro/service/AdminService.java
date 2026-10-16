@@ -29,11 +29,9 @@ public class AdminService {
     public Map<String, Object> getAdminDashboard() {
         Map<String, Object> dashboard = new HashMap<>();
 
-        // User statistics
         long totalUsers = userRepository.count();
         long activeUsers = userRepository.findAll().stream().filter(User::isActive).count();
 
-        // Campaign statistics
         List<Campaign> allCampaigns = campaignRepository.findAll();
         long totalCampaigns = allCampaigns.size();
         long sentCampaigns = allCampaigns.stream()
@@ -61,7 +59,6 @@ public class AdminService {
             userStats.put("role", user.getRole());
             userStats.put("active", user.isActive());
 
-            // Add campaign count for each user
             long campaignCount = campaignRepository.findByUserId(user.getId()).size();
             userStats.put("campaignCount", campaignCount);
 
@@ -83,7 +80,6 @@ public class AdminService {
             campaignStats.put("createdAt", campaign.getCreatedAt());
             campaignStats.put("sentTime", campaign.getSentTime());
 
-            // Get user name
             User user = userRepository.findById(campaign.getUserId()).orElse(null);
             campaignStats.put("userName", user != null ? user.getFullName() : "Unknown");
 
@@ -92,8 +88,6 @@ public class AdminService {
     }
 
     public List<Map<String, Object>> getSystemActivities() {
-        // This would typically come from an activity log
-        // For now, return recent campaigns as activities
         List<Campaign> recentCampaigns = campaignRepository.findAll().stream()
                 .sorted((c1, c2) -> c2.getCreatedAt().compareTo(c1.getCreatedAt()))
                 .limit(20)
@@ -129,7 +123,6 @@ public class AdminService {
             platformAnalytics.setDeliveryRate((double) (totalSent - totalFailed) / totalSent * 100);
         }
 
-        // Calculate total opens and clicks across all campaigns
         int totalOpened = 0;
         int totalClicked = 0;
 
@@ -139,7 +132,6 @@ public class AdminService {
                 totalOpened += campaignAnalytics.getTotalOpened();
                 totalClicked += campaignAnalytics.getTotalClicked();
             } catch (Exception e) {
-                // Skip campaigns that can't be analyzed
             }
         }
 
@@ -157,8 +149,6 @@ public class AdminService {
     }
 
     public List<Map<String, Object>> getSystemLogs() {
-        // This would typically come from a logging system
-        // For now, return a placeholder
         return List.of(
                 Map.of("level", "INFO", "message", "System started", "timestamp", LocalDateTime.now()),
                 Map.of("level", "INFO", "message", "Database connected", "timestamp", LocalDateTime.now()),

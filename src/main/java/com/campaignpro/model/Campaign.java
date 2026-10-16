@@ -31,7 +31,7 @@ public class Campaign {
 
     private List<String> groupIds = new ArrayList<>();
 
-    private CampaignStatus status = CampaignStatus.DRAFT; // DRAFT, SCHEDULED, SENT, FAILED
+    private CampaignStatus status = CampaignStatus.DRAFT;
 
     private LocalDateTime scheduledTime;
 

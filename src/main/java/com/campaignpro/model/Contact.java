@@ -21,7 +21,7 @@ public class Contact {
     private String id;
 
     @Indexed
-    private String userId; // Reference to user who owns this contact
+    private String userId;
 
     private String firstName;
 
@@ -32,7 +32,7 @@ public class Contact {
 
     private String phone;
 
-    private List<String> groups = new ArrayList<>(); // List of group names
+    private List<String> groups = new ArrayList<>();
 
     private boolean active = true;
 

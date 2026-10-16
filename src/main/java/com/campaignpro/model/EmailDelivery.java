@@ -26,7 +26,7 @@ public class EmailDelivery {
 
     private String email;
 
-    private DeliveryStatus status = DeliveryStatus.PENDING; // PENDING, SENT, DELIVERED, FAILED, BOUNCED
+    private DeliveryStatus status = DeliveryStatus.PENDING;
 
     private String errorMessage;
 

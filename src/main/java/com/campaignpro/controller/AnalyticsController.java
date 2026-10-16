@@ -54,8 +54,6 @@ public class AnalyticsController {
     @GetMapping("/trends")
     public ResponseEntity<Map<String, Object>> getPerformanceTrends(Authentication authentication) {
         String userId = getUserId(authentication);
-        // This would return trend data over time
-        // For now, return a placeholder
         Map<String, Object> trends = Map.of(
                 "message", "Trends data would be calculated here",
                 "userId", userId
@@ -66,8 +64,6 @@ public class AnalyticsController {
     @GetMapping("/reports")
     public ResponseEntity<Map<String, Object>> generateReports(Authentication authentication) {
         String userId = getUserId(authentication);
-        // This would generate detailed reports
-        // For now, return a placeholder
         Map<String, Object> reports = Map.of(
                 "message", "Reports would be generated here",
                 "userId", userId

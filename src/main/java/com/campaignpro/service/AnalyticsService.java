@@ -158,7 +158,7 @@ public class AnalyticsService {
         try {
             activityType = CampaignActivity.ActivityType.valueOf(type.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return; // Invalid activity type
+            return;
         }
 
         EmailDelivery delivery = emailDeliveryRepository.findById(deliveryId).orElse(null);
@@ -174,7 +174,6 @@ public class AnalyticsService {
 
         activityRepository.save(activity);
 
-        // Update delivery status if opened
         if (activityType == CampaignActivity.ActivityType.OPEN) {
             delivery.setStatus(EmailDelivery.DeliveryStatus.DELIVERED);
             delivery.setDeliveredAt(LocalDateTime.now());

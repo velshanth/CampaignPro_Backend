@@ -80,7 +80,6 @@ public class ContactController {
         return ResponseEntity.ok(contacts);
     }
 
-    // Contact Group Endpoints
     @GetMapping("/groups")
     public ResponseEntity<List<ContactGroupDTO>> getAllGroups(Authentication authentication) {
         String userId = getUserId(authentication);

@@ -19,7 +19,7 @@ public class JwtUtil {
     @Value("${jwt.secret:your-super-secret-jwt-key-change-this-in-production}")
     private String secret;
 
-    @Value("${jwt.expiration:900000}") // 15 minutes in milliseconds
+    @Value("${jwt.expiration:900000}")
     private long jwtExpiration;
 
     private SecretKey getSigningKey() {

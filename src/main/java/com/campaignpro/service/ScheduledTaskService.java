@@ -22,7 +22,7 @@ public class ScheduledTaskService {
     @Autowired
     private AnalyticsService analyticsService;
 
-    @Scheduled(fixedRate = 60000) // Run every minute
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void processScheduledCampaigns() {
         LocalDateTime now = LocalDateTime.now();
@@ -31,7 +31,6 @@ public class ScheduledTaskService {
 
         for (Campaign campaign : scheduledCampaigns) {
             try {
-                // Reload campaign to ensure we have the latest state
                 Campaign currentCampaign = campaignRepository.findById(campaign.getId()).orElse(campaign);
                 if (currentCampaign.getStatus() == Campaign.CampaignStatus.SCHEDULED) {
                     campaignService.sendCampaign(currentCampaign.getId(), currentCampaign.getUserId());
@@ -43,7 +42,7 @@ public class ScheduledTaskService {
         }
     }
 
-    @Scheduled(cron = "0 0 * * * *") // Run every hour
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void updateAnalytics() {
         List<Campaign> sentCampaigns = campaignRepository.findByStatus(Campaign.CampaignStatus.SENT);
@@ -52,7 +51,6 @@ public class ScheduledTaskService {
             try {
                 analyticsService.saveAnalytics(campaign.getId(), campaign.getUserId());
             } catch (Exception e) {
-                // Log error but continue processing other campaigns
             }
         }
     }

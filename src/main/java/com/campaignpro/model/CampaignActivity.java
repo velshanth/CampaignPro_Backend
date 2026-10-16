@@ -27,9 +27,9 @@ public class CampaignActivity {
     @Indexed
     private String contactId;
 
-    private ActivityType type; // OPEN, CLICK, BOUNCE, UNSUBSCRIBE
+    private ActivityType type;
 
-    private String linkClicked; // For click activities
+    private String linkClicked;
 
     private String userAgent;
 

@@ -28,7 +28,7 @@ public class User {
 
     private String fullName;
 
-    private String role = "USER"; // USER, ADMIN
+    private String role = "USER";
 
     private boolean active = true;
 
