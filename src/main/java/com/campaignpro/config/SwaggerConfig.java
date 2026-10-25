@@ -18,7 +18,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Newsletter and Email Campaign")
+                        .title("Campaign Pro")
                         .version("1.0")
                         .description("API with JWT Authentication"))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
